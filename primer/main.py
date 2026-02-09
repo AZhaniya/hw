@@ -1,1 +1,2 @@
-print(3*8)
+s=['bsdf', 'afgtyjmnhyjukhy']
+print(sorted(s))
