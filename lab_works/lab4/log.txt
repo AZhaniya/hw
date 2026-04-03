@@ -1,0 +1,20 @@
+2026-04-03 23:52:02.989238; 1;ATTACK;{'damage': 21, 'player_id': 1}
+2026-04-03 23:52:02.989238; 2;ATTACK;{'damage': 21, 'player_id': 1}
+2026-04-03 23:52:02.989255; 1;LOOT;{'item': Item(id=2,name='Spear',power=40)}
+2026-04-03 23:52:02.989255; 2;LOOT;{'item': Item(id=2,name='Spear',power=44)}
+2026-04-03 23:52:02.989263; 1;HEAL;{'heal': 37}
+2026-04-03 23:52:02.989263; 2;HEAL;{'heal': 37}
+2026-04-03 23:52:02.989271; 1;ATTACK;{'damage': 16, 'player_id': 2}
+2026-04-03 23:52:02.989271; 2;ATTACK;{'damage': 16, 'player_id': 2}
+2026-04-03 23:52:02.989277; 1;HEAL;{'heal': 22}
+2026-04-03 23:52:02.989277; 2;HEAL;{'heal': 22}
+2026-04-03 23:52:02.989281; 1;LOOT;{'item': Item(id=2,name='Spear',power=44)}
+2026-04-03 23:52:02.989281; 2;LOOT;{'item': Item(id=2,name='Spear',power=48)}
+2026-04-03 23:52:02.989284; 1;HEAL;{'heal': 19}
+2026-04-03 23:52:02.989284; 2;HEAL;{'heal': 19}
+2026-04-03 23:52:02.989287; 1;LOOT;{'item': Item(id=1,name='Sword',power=50)}
+2026-04-03 23:52:02.989287; 2;LOOT;{'item': Item(id=1,name='Sword',power=55)}
+2026-04-03 23:52:02.989297; 1;LOOT;{'item': Item(id=2,name='Spear',power=48)}
+2026-04-03 23:52:02.989297; 2;LOOT;{'item': Item(id=2,name='Spear',power=52)}
+2026-04-03 23:52:02.989301; 1;ATTACK;{'damage': 14, 'player_id': 2}
+2026-04-03 23:52:02.989301; 2;ATTACK;{'damage': 14, 'player_id': 2}
