@@ -1,4 +1,34 @@
+#6
+from datetime import datetime
+class Event:
+    def __init__(self,type:str,data:dict):
+        self.type=type
+        self.data=data
+        self.timestamp=datetime.now()
+    def __str__(self):
+        return f"Event(type= '{self.type}', data={self.data}, timestamp='{self.timestamp}'"
+e = Event("ATTACK", {"damage": 20})
+print(e)
 
+#4,5,18
+class Inventory:
+    def __init__(self):
+        self._items:Dict[int,Item]={}
+    def add_item(self,item: Item):
+        self._items[item.id]= item
+    def remove_item(self ,item_id: int):
+        self._items.pop(item_id,None)
+    def get_items(self) -> list[Item]:
+        return list(self._items.values())
+    def unique_items(self)-> set[Item]:
+        return set(self._items.values())
+    def to_dict(self) -> dict[int, Item]:
+        return self._items.copy()
+    def get_strong_items(self,min_power:int)->list[Item]:
+        r=lambda x: x.power>=min_power
+        return [i for i in self._items.values() if r(i)]
+    def __iter__(self):
+        return iter(self._items.values())
 
 #1,2,7,15,16,17
 class Player:
@@ -6,13 +36,13 @@ class Player:
         self._id=id
         self._name=name.strip().title()
         self._hp=hp if hp>0 else 0
-        self._inventory=Inventory()
+        self._inventory= Inventory()
     def __str__(self):
         return f"Player(id={self._id}, name='{self._name}', hp={self._hp})"
     def __del__(self):
         return f"Player <{self._name}> удалён"
     @classmethod
-    def from_string(cls, data: str):
+    def from_string(cls,data:str):
         if not isinstance(data,str):
             raise ValueError
         a=[x.strip() for x in data.split(',')]
@@ -20,29 +50,34 @@ class Player:
             raise ValueError
         try:
             id=int(a[0])
-            name = a[1]
-            hp= int(a[2])
+            name=a[1]
+            hp=int(a[2])
         except:
             raise ValueError
         return cls(id,name,hp)
-    @property
-    def id(self):
-        return self._id
+
+
     @property
     def hp(self):
         return self._hp
     @property
     def inventory(self):
         return self._inventory
+    @property
+    def id(self):
+        return self._id
 
     def handle_event(self,event:Event):
         if event.type=='ATTACK':
-            self._hp=max(0,self._hp-event.data.get('damage',0))
+            dmg= event.data.get('damage',0)
+            self._hp=max(0,self._hp-dmg)
         elif event.type=='HEAL':
             self._hp+=event.data.get('heal',0)
-        elif event.type=='LOOT':
+        else:
             self._inventory.add_item(event.data.get('item'))
 
+p=Player.from_string('2,alice,100')
+print(p)
 
 
 class Warrior(Player):
@@ -78,38 +113,8 @@ class Item:
     def __hash__(self):
         return hash(self.id)
 
-
 #%%
-#4,5,18
-class Inventory:
-    def __init__(self):
-        self._items:Dict[int,Item]={}
-    def add_item(self,item: Item):
-        self._items[item.id]= item
-    def remove_item(self ,item_id: int):
-        self._items.pop(item_id,None)
-    def get_items(self) -> list[Item]:
-        return list(self._items.values())
-    def unique_items(self)-> set[Item]:
-        return set(self._items.values())
-    def to_dict(self) -> dict[int, Item]:
-        return self._items.copy()
-    def get_strong_items(self,min_power:int)->list[Item]:
-        r=lambda x: x.power>=min_power
-        return [i for i in self._items.values() if r(i)]
-    def __iter__(self):
-        return iter(self._items.values())
 
-#%%
-#6
-from datetime import datetime
-class Event:
-    def __init__(self,type:str,data:dict):
-        self.type=type
-        self.data=data
-        self.timestamp= datetime.now()
-    def __str__(self):
-        return f"Event(type='{self.type}',data={self.data},timestamp='{self.timestamp}')"
 
 #%%
 #8,9
@@ -135,7 +140,6 @@ class Logger:
                     continue
         return a
 
-#%%
 #10
 class EventIterator:
     def __init__(self,events):
