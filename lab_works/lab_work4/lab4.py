@@ -10,6 +10,25 @@ class Event:
 e = Event("ATTACK", {"damage": 20})
 print(e)
 
+
+#3
+class Item:
+    def __init__(self,id,name,power):
+        self.id=id
+        self.name=name.strip().title()
+        self.power=power
+
+    def __str__(self):
+        return f"Item(id={self.id},name='{self.name}',power={self.power})"
+    def __eq__(self,other):
+        if not isinstance(other,Item):
+            return False
+        return self.id==other.id
+    def __repr__(self):
+        return self.__str__()
+    def __hash__(self):
+        return hash(self.id)
+
 #4,5,18
 class Inventory:
     def __init__(self):
@@ -94,26 +113,7 @@ class Mage(Player):
             i=event.data.get('item')
             i.power=int(i.power*1.1)
         super().handle_event(event)
-#%%
-#3
-class Item:
-    def __init__(self,id,name,power):
-        self.id=id
-        self.name=name.strip().title()
-        self.power=power
 
-    def __str__(self):
-        return f"Item(id={self.id},name='{self.name}',power={self.power})"
-    def __eq__(self,other):
-        if not isinstance(other,Item):
-            return False
-        return self.id==other.id
-    def __repr__(self):
-        return self.__str__()
-    def __hash__(self):
-        return hash(self.id)
-
-#%%
 
 
 #%%
