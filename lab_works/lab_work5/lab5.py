@@ -1,6 +1,4 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-
+from fastapi import FastAPI, HTTPException
 app = FastAPI()
 @app.get("/")
 def root():
@@ -85,9 +83,10 @@ class Inventory:
         r=[x for x in self.products.values() if (lambda y: y.price>=min_price)(x)]
         return r
 
-inv =Inventory()
+
 @app.post('/task4,5')
 def add_pr():
+    inv = Inventory()
     inv.add_product(Product(1, "Laptop", 1200.0, "Electronics"))
     inv.add_product(Product(2, "Mouse", 25.0, "Electronics"))
     expensive=inv.filter_by_price(100.0)
@@ -116,17 +115,89 @@ class Logger:
                     'product_id':p_id
                 })
         return logs
-p=Product(1, "Laptop", 1200.0, "Electronics")
+p2=Product(1, "Laptop", 1200.0, "Electronics")
 p1=Product(2, "Mouse", 25.0, "Electronics")
 u1=User.from_string("2, Alice Wonderland , alice@wonder.com")
 u = User(1, " john doe ", "John@Example.COM")
 
 @app.post('/task6/action')
 def log_write():
-    Logger.log_action(u,'BUY',p,'logs.txt')
+    Logger.log_action(u,'BUY',p2,'logs.txt')
     Logger.log_action(u1,'BUY',p1,'logs.txt')
     return {'information is written'}
 
 @app.get('/task6/read')
 def get_log():
     return Logger.read_logs('logs.txt')
+
+#7,8
+from typing import List
+class Order:
+    def __init__(self,id:int,user:User,products:List[Product]):
+        self.id=id
+        self.user=user
+        self.products=products if products else []
+    def add_product(self,product:Product):
+        self.products.append(product)
+    def remove_product(self,product_id:int):
+        self.products=[p for p in self.products if p.id!=product_id]
+    def total_price(self):
+        s=sum(p.price for p in self.products)
+        return s
+    def most_expensive_products(self,n:int):
+        ex=sorted(self.products, key=lambda p: p.price,reverse=True)[:n]
+        return ex
+    def __str__(self):
+        product=','.join([p.name for p in self.products])
+        return f"Order(id={self.id},user={self.user._id}, products=[{product}])"
+
+
+@app.post('/task7,8')
+def order():
+    ord = Order(1,u,[])
+    ord.add_product(p2)
+    ord.add_product(p1)
+    return {
+        'order': ord,
+        'summa': ord.total_price(),
+        'expensive': ord.most_expensive_products(1)
+    }
+
+#9
+def price_stream(products):
+    for p in products:
+        yield p.price
+prod=[p2,p1]
+@app.get('/task9')
+def get_price():
+    return {list(price_stream(prod))}
+
+
+#10
+class OrderIterator:
+    def __init__(self,orders):
+        self.orders=orders
+        self._index=0
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self._index<len(self.orders):
+            order=self.orders[self._index]
+            self._index+=1
+            return order
+        else:
+            raise StopIteration
+lst=[
+    Order(1,u,[p1]),
+    Order(2,u1,[p2]),
+    Order(3,u,[p1,p2])
+]
+ordi=OrderIterator(lst)
+@app.get('/task10')
+def next_ord():
+    try:
+        order=next(ordi)
+        return {str(order)}
+    except StopIteration:
+        raise HTTPException(404,'No more orders')
+
