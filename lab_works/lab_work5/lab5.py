@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from starlette.responses import HTMLResponse
+
 app = FastAPI()
 @app.get("/")
 def root():
@@ -26,15 +28,15 @@ class User:
         email=p[2]
         return cls(id,name,email)
 
-@app.post('/task1')
+@app.get('/task1')
 def task1():
     u = User(1, " john doe ", "John@Example.COM")
-    return u
+    return {'result':u}
 
-@app.post('/task2')
+@app.get('/task2')
 def task2():
     u1= User.from_string("2, Alice Wonderland , alice@wonder.com")
-    return u1
+    return {'result':u1}
 
 #3
 class Product:
@@ -58,7 +60,7 @@ class Product:
             'price':self.price,
             'category':self.category
         }
-@app.post('/task3')
+@app.get('/task3')
 def task3():
     pr=Product(1,'Laptop',1200.0,'electronic')
     return pr.to_dict()
@@ -90,10 +92,10 @@ def add_pr():
     inv.add_product(Product(1, "Laptop", 1200.0, "Electronics"))
     inv.add_product(Product(2, "Mouse", 25.0, "Electronics"))
     expensive=inv.filter_by_price(100.0)
-    return expensive
+    return {'result':expensive}
 
 #6
-from datetime import datetime
+from datetime import datetime, date
 class Logger:
     @staticmethod
     def log_action(user: User, action: str, product: Product, filename: str):
@@ -118,11 +120,11 @@ class Logger:
 p2=Product(1, "Laptop", 1200.0, "Electronics")
 p1=Product(2, "Mouse", 25.0, "Electronics")
 u1=User.from_string("2, Alice Wonderland , alice@wonder.com")
-u = User(1, " john doe ", "John@Example.COM")
+u2 = User(1, " john doe ", "John@Example.COM")
 
 @app.post('/task6/action')
 def log_write():
-    Logger.log_action(u,'BUY',p2,'logs.txt')
+    Logger.log_action(u2,'BUY',p2,'logs.txt')
     Logger.log_action(u1,'BUY',p1,'logs.txt')
     return {'information is written'}
 
@@ -152,9 +154,9 @@ class Order:
         return f"Order(id={self.id},user={self.user._id}, products=[{product}])"
 
 
-@app.post('/task7,8')
+@app.get('/task7,8')
 def order():
-    ord = Order(1,u,[])
+    ord = Order(1,u2,[])
     ord.add_product(p2)
     ord.add_product(p1)
     return {
@@ -170,7 +172,7 @@ def price_stream(products):
 prod=[p2,p1]
 @app.get('/task9')
 def get_price():
-    return {list(price_stream(prod))}
+    return {'result':list(price_stream(prod))}
 
 
 #10
@@ -188,16 +190,99 @@ class OrderIterator:
         else:
             raise StopIteration
 lst=[
-    Order(1,u,[p1]),
+    Order(1,u2,[p1]),
     Order(2,u1,[p2]),
-    Order(3,u,[p1,p2])
+    Order(3,u2,[p1,p2])
 ]
 ordi=OrderIterator(lst)
 @app.get('/task10')
 def next_ord():
     try:
         order=next(ordi)
-        return {str(order)}
+        return {'result':str(order)}
     except StopIteration:
         raise HTTPException(404,'No more orders')
 
+import numpy as np
+#11
+products=[p1,p2]
+arr= np.array([x.price for x in products])
+@app.get('/task11')
+def arr_price():
+    return {'prices':arr}
+
+#12
+arr = np.array([1200, 25, 450])
+r=(float(np.mean(arr)),float(np.median(arr)))
+@app.get('/task12')
+def mean_med_arr():
+    return {'result':r}
+
+#13
+@app.get('/task13')
+def normalize():
+    arr1 = np.array([1200.0, 25.0, 450.0])
+    r=(arr1-arr1.min())/(arr1.max()-arr1.min())
+    return {'normalized':r}
+
+#14
+products = [Product(1,"Laptop",1200.0,"Electronics"), Product(2,"T-Shirt",20.0,"Clothing")]
+arr= np.array([x.category for x in products])
+@app.get('/task14')
+def category():
+    return {'categories':arr}
+
+#15
+arr = np.array(["Electronics","Clothing","Electronics"])
+res=np.unique(arr)
+@app.get('/tas15')
+def unique_arr():
+    return {'result': res}
+
+#16
+products = [Product(1,"Laptop",1200.0,"Electronics"), Product(2,"Mouse",25.0,"Electronics"), Product(3,"Monitor",450.0,"Electronics")]
+prices=np.array([x.price for x in products])
+avg=np.mean(prices)
+r=[p for p in products if p.price>avg]
+@app.get('/task16')
+def more_than_avg():
+    return {'result': r}
+
+#17
+arr=np.array([1200.0, 25.0, 450.0])
+r=arr*0.9
+@app.get('/task17')
+def sale():
+    return {'result': r}
+#18
+orders = [Order(1,u1,[Product(1,"Laptop",1200.0,"Electronics")]), Order(2,u2,[Product(2,"Mouse",25.0,"Electronics"), Product(1,"Laptop",1200.0,"Electronics")])]
+s= [sum(p.price for p in order.products) for order in orders]
+@app.get('/task18')
+def sum_of_price_month():
+    return {'result':s}
+
+#19
+@app.get('/task19')
+def average():
+    arr = np.array([1200.0, 1225.0])
+    r=np.mean(arr)
+    return {'result':r}
+
+#20
+arr=np.array([1200.0, 900.0, 1500.0])
+r=np.where(arr>1000)
+@app.get('/task20')
+def index():
+    return {'result':r}
+
+
+#21
+import pandas as pd
+@app.get('/task21', response_class=HTMLResponse)
+def df_users():
+    users = [User(1, "John Doe", "john@example.com"),
+             User(2, "Alice", "alice@example.com")]
+    data={
+        'id'
+    }
+    df=pd.DataFrame(data)
