@@ -409,3 +409,196 @@ def sort_val():
     df=df.sort_values(by='price',ascending=False)
     return df.to_html(index=False)
 
+#31
+@app.get('/task31',response_class=HTMLResponse)
+def quantiy():
+    data = {
+        'order_id': [101, 102],
+        'product_name': ['Laptop', 'Mouse'],
+        'price': [1200, 25]
+    }
+    df = pd.DataFrame(data)
+    df['quantity'] = df.groupby('order_id')['product_name'].transform('count')
+    return df.to_html(index=False)
+
+#32
+@app.get('/task32',response_class=HTMLResponse)
+def total_pr():
+    data = {
+        'order_id': [101, 102],
+        'product_name': ['Laptop', 'Mouse'],
+        'price': [1200, 25],
+        'quantity':[1,2]
+    }
+    df = pd.DataFrame(data)
+    df['total_price']=df['quantity']*df['price']
+    return df.to_html(index=False)
+
+#33
+@app.get('/task33',response_class=HTMLResponse)
+def only_elec():
+    data = {
+        'product_name': ['Laptop', 'Mouse','T-Shirt'],
+        'category':['Electronics','Electronics','Clothing'],
+        'price': [1200, 25,20]
+    }
+    df = pd.DataFrame(data)
+    df=df[df['category']=='Electronics']
+    return df.to_html(index=False)
+
+#34
+@app.get('/task34',response_class=HTMLResponse)
+def count_categ():
+    data = {
+        'product_name': ['Laptop', 'Mouse','T-Shirt'],
+        'category':['Electronics','Electronics','Clothing'],
+        'price': [1200, 25,20]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('category').size().reset_index(name='count')
+    return r.to_html(index=False)
+
+#35
+@app.get('/task35',response_class=HTMLResponse)
+def mean_categ():
+    data = {
+        'product_name': ['Laptop', 'Mouse','T-Shirt'],
+        'category':['Electronics','Electronics','Clothing'],
+        'price': [1200, 25,20]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('category')['price'].mean().reset_index()
+    r=r.rename(columns={'price':'mean_price'})
+    return r.to_html(index=False)
+
+#36
+@app.get('/task36',response_class=HTMLResponse)
+def sorted():
+    data = {
+        'order_id':[101,102,103],
+        'total_price':[20,1200,25]
+    }
+    df = pd.DataFrame(data)
+    r=df.sort_values(by='total_price',ascending=False)
+    return r.to_html(index=False)
+
+#37
+@app.get('/task37',response_class=HTMLResponse)
+def top3():
+    data = {
+        'order_id':[101,102,103,104],
+        'total_price':[1200,50,500,1500]
+    }
+    df = pd.DataFrame(data)
+    r = df.sort_values(by='total_price', ascending=False).head(3)
+    return r.to_html(index=False)
+#38
+@app.get('/task38', response_class=HTMLResponse)
+def merge_data():
+    udf=pd.DataFrame({
+        'user_id':[1,2],
+        'user_name':['John','Alice']
+    })
+    ordf=pd.DataFrame({
+        'order_id':[101,102],
+        'user_id':[1,2],
+        'total':[1200,50]
+    })
+    df=pd.merge(ordf,udf,on='user_id')
+    return df[['order_id','user_name','total']].to_html(index=False)
+
+#39
+@app.get('/task39',response_class=HTMLResponse)
+def mean():
+    data = {
+        'user_name': ['John', 'John', 'Alice'],
+        'total': [1200, 500, 50]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('user_name')['total'].mean()
+    r=r.rename(columns={'total':'mean_total'})
+    return r.to_html(index=False)
+
+#40
+@app.get('/task40',response_class=HTMLResponse)
+def count_ord():
+    data = {
+        'user_name': ['John', 'John', 'Alice'],
+        'order_id': [101,102,103]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('user_name')['order_id'].count().reset_index()
+    r=r.rename(columns={'order_id':'order_count'})
+    return r.to_html(index=False)
+
+#41
+@app.get('/task41',response_class=HTMLResponse)
+def max_ord():
+    data = {
+        'user_name': ['John', 'John', 'Alice'],
+        'total_price': [1200, 500, 50]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('user_name')['total_price'].max().reset_index()
+    r=r.rename(columns={'total_price':'max_order'})
+    return r.to_html(index=False)
+
+#42
+@app.get('/task42',response_class=HTMLResponse)
+def unq_cat():
+    data = {
+        'user_name': ['John', 'John', 'John', 'Alice'],
+        'category':["Electronics", "Electronics", "Clothing", "Clothing"]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('user_name')['category'].nunique().reset_index()
+    r=r.rename(columns={'category':'unique_categories'})
+    return r.to_html(index=False)
+
+#43
+@app.get('/task43',response_class=HTMLResponse)
+def vip():
+    data = {
+        'user_name': ['John','Alice'],
+        'total_sum':[1700,25]
+    }
+    df = pd.DataFrame(data)
+    df['VIP']=df['total_price']>1000
+    return df.to_html(index=False)
+
+
+#44
+app.get('/task44',response_class=HTMLResponse)
+def sort_total_mean():
+    data = {
+        'user_name': ['John','Alice','Bob'],
+        'total_sum':[1700,25,1700],
+        'mean_total':[850,25,600]
+    }
+    df = pd.DataFrame(data)
+    r = df.sort_values(by=['total_sum','mean_total'], ascending=[False,True])
+    return r.to_html(index=False)
+
+#45
+app.get('/task45',response_class=HTMLResponse)
+def all():
+    df = pd.DataFrame({
+        "user_name": ["John", "John", "Alice"],
+        "order_id": [101, 103, 102],
+        "total_price": [1200, 500, 25],
+        "category": ["Electronics", "Clothing", "Clothing"]
+    })
+    total_ord=df.groupby('user_name')['order_id'].count()
+    total_sum=df.groupby('user_name')['total_price'].sum()
+    mean_total=df.groupby('user_name')['total_price'].mean()
+    max_ord=df.groupby('user_name')['total_price'].max()
+    unq=df.groupby('user_name')['category'].nunique()
+    r = pd.DataFrame({
+        "total_orders": total_ord,
+        "total_sum": total_sum,
+        "mean_total": mean_total,
+        "max_order": max_ord,
+        "unique_categories": unq
+    }).reset_index()
+    r['VIP']=r['total_sum']>1000
+    return r.to_html(index=False)
