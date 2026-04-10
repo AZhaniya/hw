@@ -1,3 +1,4 @@
+import unicodedata
 from fastapi import FastAPI, HTTPException
 from starlette.responses import HTMLResponse
 
@@ -14,6 +15,7 @@ class User:
         if '@' not in email:
             raise ValueError
         self._email = email.strip().lower()
+        self.registration_date=date.today()
     def __str__(self):
         return f"User(id={self._id}, name='{self._name}', email='{self._email}')"
     def __del__(self):
@@ -282,7 +284,128 @@ import pandas as pd
 def df_users():
     users = [User(1, "John Doe", "john@example.com"),
              User(2, "Alice", "alice@example.com")]
+    df=pd.DataFrame([{
+        'id':u.id,
+        'name':u.name ,
+        'email':u.email,
+        'registration_date':u.registration_date
+    }for u in users])
+    return df.to_html(index=False)
+
+#22
+@app.get('/task22', response_class=HTMLResponse)
+def df_product():
+    products = [Product(1, "Laptop", 1200.0, "Electronics"), Product(2, "T-Shirt", 20.0, "Clothing")]
+    df = pd.DataFrame([{
+        'id': p.id,
+        'name': p.name,
+        'category': p.category,
+        'price': p.price
+    } for p in products])
+    return df.to_html(index=False)
+
+#23
+@app.get('/task23', response_class=HTMLResponse)
+def orders():
+    udf=pd.DataFrame({
+        'id':[1,2],
+        'name':['John','Alice']
+    })
+    ordf=pd.DataFrame({
+        'order_id':[101,102],
+        'user_id':[1,2],
+        'total':[1200,25]
+    })
+    df=pd.merge(ordf,udf,left_on='user_id',right_on='id')
+    df=df.rename(columns={'name':'user_name'})
+    return df[['order_id','user_name','total']].to_html(index=False)
+
+#24
+@app.get('/task24', response_class=HTMLResponse)
+def more_than_value():
     data={
-        'id'
+        'order_id':[101,102],
+        'user_name':['John','Alice'],
+        'total':[1200,25]
     }
     df=pd.DataFrame(data)
+    r=df[df['total'] > 100]
+    return r.to_html(index=False)
+
+#25
+@app.get('/task25', response_class=HTMLResponse)
+def group():
+    data = {
+        'order_id': [101, 103,102],
+        'user_name': ['John', 'John' ,'Alice'],
+        'total': [1200,500, 25]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('user_name')['total'].sum()
+    r=r.rename(columns={'total':'total_sum'})
+    return r.to_html(index=False)
+
+#26
+@app.get('/task26',response_class=HTMLResponse)
+def mean_groupby():
+    data = {
+        'order_id': [101, 103, 102],
+        'user_name': ['John', 'John', 'Alice'],
+        'total': [1200, 500, 25]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('user_name')['total'].mean()
+    r=r.rename(columns={'total':'mean_total'})
+    return r.to_html(index=False)
+
+#27
+@app.get('/task27',response_class=HTMLResponse)
+def count_orders():
+    data = {
+        'order_id': [101, 103, 102],
+        'user_name': ['John', 'John', 'Alice'],
+        'total': [1200, 500, 25]
+    }
+    df = pd.DataFrame(data)
+    r=df.groupby('user_name')['order_id'].count()
+    r=r.rename(columns={'order_id':'order_count'})
+    return r.to_html(index=False)
+
+#28
+@app.get('/task28',response_class=HTMLResponse)
+def mean_category():
+    data={
+        'id':[1,2,3],
+        'name':['Laptop','Mouse','Shirt'],
+        'category':['Electronics','Electronics','Clothing'],
+        'price':[1200,25,20]
+    }
+    df = pd.DataFrame(data)
+    r = df.groupby('category')['price'].mean()
+    r = r.rename(columns={'price': 'mean_price'})
+    return r.to_html(index=False)
+
+#29
+@app.get('/task29',response_class=HTMLResponse)
+def new_column():
+    data = {
+        'id': [1, 2],
+        'name': ['Laptop', 'Mouse'],
+        'price': [1200, 25]
+    }
+    df = pd.DataFrame(data)
+    df['discounted_price']=df['price']*0.9
+    return df.to_html(index=False)
+
+#30
+@app.get('/task30',response_class=HTMLResponse)
+def sort_val():
+    data = {
+        'id': [1, 2,3],
+        'name': ['Laptop', 'Mouse','Monitor'],
+        'price': [1200, 25,450]
+    }
+    df = pd.DataFrame(data)
+    df=df.sort_values(by='price',ascending=False)
+    return df.to_html(index=False)
+
