@@ -568,7 +568,7 @@ def vip():
 
 
 #44
-app.get('/task44',response_class=HTMLResponse)
+@app.get('/task44',response_class=HTMLResponse)
 def sort_total_mean():
     data = {
         'user_name': ['John','Alice','Bob'],
@@ -580,7 +580,7 @@ def sort_total_mean():
     return r.to_html(index=False)
 
 #45
-app.get('/task45',response_class=HTMLResponse)
+@app.get('/task45',response_class=HTMLResponse)
 def all():
     df = pd.DataFrame({
         "user_name": ["John", "John", "Alice"],
