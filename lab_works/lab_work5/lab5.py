@@ -9,17 +9,17 @@ def root():
 
 #1,2
 class User:
-    def __init__(self,id:int, name:str,email:str):
-        self._id=id
+    def __init__(self,id:int,name:str,email:str):
         self._name=name.strip().title()
+        self._id=id
         if '@' not in email:
             raise ValueError
-        self._email = email.strip().lower()
-        self.registration_date=date.today()
+        self._email=email.lower()
     def __str__(self):
-        return f"User(id={self._id}, name='{self._name}', email='{self._email}')"
+        return f"User(id={self._id} , name='{self._name}', email='{self._email}')"
     def __del__(self):
-        return f"User {self._name} deleted"
+        return f"User <{self._name}> deleted"
+
     @classmethod
     def from_string(cls,data:str):
         p=[x.strip() for x in data.split(',')]
@@ -29,16 +29,17 @@ class User:
         name=p[1]
         email=p[2]
         return cls(id,name,email)
-
 @app.get('/task1')
-def task1():
+def get_user():
     u = User(1, " john doe ", "John@Example.COM")
     return {'result':u}
 
 @app.get('/task2')
-def task2():
-    u1= User.from_string("2, Alice Wonderland , alice@wonder.com")
-    return {'result':u1}
+def get_user_str():
+    u = User.from_string("2, Alice Wonderland , alice@wonder.com")
+    return {'result': u}
+
+
 
 #3
 class Product:
@@ -48,25 +49,25 @@ class Product:
         self.price=price
         self.category=category
     def __str__(self):
-        return f"Product(id={self.id},name='{self.name}',price={self.price}, category='{self.category}')"
-    def  __eq__(self,other):
-        if not isinstance(other,Product):
+        return f"Product(id={self.id}, name='{self.name}', price={self.price},category='{self.category}')"
+    def __eq__(self, other):
+        if not isinstance(other, Product):
             return False
         return self.id==other.id
     def __hash__(self):
         return hash(self.id)
     def to_dict(self):
         return {
-            'id': self.id,
+            'id':self.id,
             'name':self.name,
-            'price':self.price,
+            'price': self.price,
             'category':self.category
         }
-@app.get('/task3')
-def task3():
-    pr=Product(1,'Laptop',1200.0,'electronic')
-    return pr.to_dict()
 
+@app.get('/task3')
+def get_product():
+    p1=Product(1, "Laptop",  1200.0 , "Electronics")
+    return {'result':p1}
 #4,5
 class Inventory:
     def __init__(self):
